@@ -2,7 +2,7 @@ NAME
     Perinci::Exporter - Metadata-aware Exporter
 
 VERSION
-    version 0.01
+    version 0.02
 
 SYNOPSIS
      package YourModule;
