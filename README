@@ -2,7 +2,7 @@ NAME
     Perinci::Exporter - Metadata-aware Exporter
 
 VERSION
-    version 0.02
+    version 0.03
 
 SYNOPSIS
      package YourModule;
@@ -275,6 +275,8 @@ FUNCTIONS
 
         Like "suffix" import option, but to apply to all exports.
 
+    None are exported by default, but they are exportable.
+
 FAQ
   Why use this module as my exporter?
     If you are fine with Exporter, Exporter::Lite, or Sub::Exporter, then
@@ -355,17 +357,11 @@ SEE ALSO
 
     Perinci::Sub::Wrapper
 
-DESCRIPTION
-    This module has Rinci metadata.
-
-FUNCTIONS
-    None are exported by default, but they are exportable.
-
 AUTHOR
     Steven Haryanto <stevenharyanto@gmail.com>
 
 COPYRIGHT AND LICENSE
-    This software is copyright (c) 2012 by Steven Haryanto.
+    This software is copyright (c) 2013 by Steven Haryanto.
 
     This is free software; you can redistribute it and/or modify it under
     the same terms as the Perl 5 programming language system itself.

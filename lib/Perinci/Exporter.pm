@@ -1,12 +1,12 @@
 package Perinci::Exporter;
 
-use 5.010;
+use 5.010001;
 use strict;
 use warnings;
 
 use Scalar::Util qw(reftype);
 
-our $VERSION = '0.02'; # VERSION
+our $VERSION = '0.03'; # VERSION
 
 # what a generic name, this hash caches the wrapped functions, so that when
 # importer asks to import a wrapped function with default wrapping options, we
@@ -62,14 +62,11 @@ sub do_export {
     # collect what symbols are available for exporting, along with their tags,
     # etc.
 
-    require Perinci::Util;
-    my %exports;
-    my $res = Perinci::Util::get_package_meta_accessor(package => $source);
-    die "Can't get metadata accessor: $res->[0] - $res->[1]"
-        unless $res->[0] == 200;
-    my $ma = $res->[2];
+    no strict 'refs';
 
-    my $metas = $ma->get_all_metas($source);
+    my %exports;
+    my $metas = \%{"$source\::SPEC"};
+    $metas //= {};
     for my $k (keys %$metas) {
         # for now we limit ourselves to subs
         next unless $k =~ /\A\w+\z/;
@@ -77,8 +74,6 @@ sub do_export {
             tags => [@{ $metas->{$k}{tags} // []}],
         };
     }
-
-    no strict 'refs';
 
     for my $k (@{$expopts->{default_exports} // []},
                @{"$source\::EXPORT"}) {
@@ -226,7 +221,7 @@ sub do_export {
                         #    "because $ssym does not have metadata";
                     } else {
                         require Perinci::Sub::Wrapper;
-                        $res = Perinci::Sub::Wrapper::wrap_sub(
+                        my $res = Perinci::Sub::Wrapper::wrap_sub(
                             %$wrap,
                             sub  => \&{"$source\::$ssym"},
                             meta => $meta,
@@ -255,9 +250,11 @@ sub do_export {
 1;
 # ABSTRACT: Metadata-aware Exporter
 
-
 __END__
+
 =pod
+
+=encoding utf-8
 
 =head1 NAME
 
@@ -265,7 +262,7 @@ Perinci::Exporter - Metadata-aware Exporter
 
 =head1 VERSION
 
-version 0.02
+version 0.03
 
 =head1 SYNOPSIS
 
@@ -554,6 +551,9 @@ Like C<suffix> import option, but to apply to all exports.
 
 =back
 
+
+None are exported by default, but they are exportable.
+
 =head1 FAQ
 
 =head2 Why use this module as my exporter?
@@ -646,26 +646,15 @@ L<Perinci>
 
 L<Perinci::Sub::Wrapper>
 
-=head1 DESCRIPTION
-
-
-This module has L<Rinci> metadata.
-
-=head1 FUNCTIONS
-
-
-None are exported by default, but they are exportable.
-
 =head1 AUTHOR
 
 Steven Haryanto <stevenharyanto@gmail.com>
 
 =head1 COPYRIGHT AND LICENSE
 
-This software is copyright (c) 2012 by Steven Haryanto.
+This software is copyright (c) 2013 by Steven Haryanto.
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.
 
 =cut
-
