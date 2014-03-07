@@ -2,7 +2,7 @@ NAME
     Perinci::Exporter - Metadata-aware Exporter
 
 VERSION
-    version 0.03
+    version 0.04
 
 SYNOPSIS
      package YourModule;
@@ -226,9 +226,8 @@ FUNCTIONS
          use YourModule foo => {args_as=>'array'}; # export with custom wrap
 
         Note that when set to 0, the exported function might already be
-        wrapped anyway, e.g. when your module adds this at the bottom:
-
-         Perinci::Sub::Wrapper::wrap_all_subs();
+        wrapped anyway, e.g. when your module uses embedded wrapping (see
+        Dist::Zilla::Plugin::Rinci::Wrap) or wrap its subroutines manually.
 
         Also note that wrapping will not be done if subroutine does not have
         metadata.
@@ -274,8 +273,6 @@ FUNCTIONS
     *   -suffix => STR
 
         Like "suffix" import option, but to apply to all exports.
-
-    None are exported by default, but they are exportable.
 
 FAQ
   Why use this module as my exporter?
@@ -357,11 +354,26 @@ SEE ALSO
 
     Perinci::Sub::Wrapper
 
+HOMEPAGE
+    Please visit the project's homepage at
+    <https://metacpan.org/release/Perinci-Exporter>.
+
+SOURCE
+    Source repository is at
+    <https://github.com/sharyanto/perl-Perinci-Exporter>.
+
+BUGS
+    Please report any bugs or feature requests on the bugtracker website
+    <https://rt.cpan.org/Public/Dist/Display.html?Name=Perinci-Exporter>
+
+    When submitting a bug or request, please include a test-file or a patch
+    to an existing test-file that illustrates the bug or desired feature.
+
 AUTHOR
     Steven Haryanto <stevenharyanto@gmail.com>
 
 COPYRIGHT AND LICENSE
-    This software is copyright (c) 2013 by Steven Haryanto.
+    This software is copyright (c) 2014 by Steven Haryanto.
 
     This is free software; you can redistribute it and/or modify it under
     the same terms as the Perl 5 programming language system itself.

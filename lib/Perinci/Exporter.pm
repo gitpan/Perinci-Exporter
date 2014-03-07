@@ -3,10 +3,11 @@ package Perinci::Exporter;
 use 5.010001;
 use strict;
 use warnings;
+use experimental 'smartmatch';
 
 use Scalar::Util qw(reftype);
 
-our $VERSION = '0.03'; # VERSION
+our $VERSION = '0.04'; # VERSION
 
 # what a generic name, this hash caches the wrapped functions, so that when
 # importer asks to import a wrapped function with default wrapping options, we
@@ -132,6 +133,9 @@ sub do_export {
     require SHARYANTO::Package::Util;
     my %existing = SHARYANTO::Package::Util::list_package_contents($target);
 
+    # recap information
+    my $recap = {wrapped=>[]};
+
     # import!
 
     $pkg_cache{$source} //= {};
@@ -144,7 +148,7 @@ sub do_export {
             @ssyms = ($imp->{sym});
         }
 
-        for my $ssym (@ssyms) {
+        for my $ssym (sort @ssyms) {
 
             if (!$exports{$ssym}) {
                 die "$ssym is not exported by $source";
@@ -213,6 +217,7 @@ sub do_export {
                 }
                 if ($cache) {
                     $sub = $cache;
+                    push @{ $recap->{wrapped} }, $ssym;
                 } else {
                     $sub = \&{"$source\::$ssym"};
                     my $meta = $metas->{$ssym};
@@ -223,14 +228,15 @@ sub do_export {
                         require Perinci::Sub::Wrapper;
                         my $res = Perinci::Sub::Wrapper::wrap_sub(
                             %$wrap,
-                            sub  => \&{"$source\::$ssym"},
-                            meta => $meta,
+                            sub_name => "$source\::$ssym",
+                            meta     => $meta,
                         );
                         die "Can't wrap $ssym for $target: ".
                             "$res->[0] - $res->[1]" unless $res->[0] == 200;
                         $sub = $res->[2]{sub};
                         $pkg_cache{$source}{$ssym}{sub} = $sub
                             if $use_default_wrap_args;
+                        push @{ $recap->{wrapped} }, $ssym;
                     }
                 }
             }
@@ -245,6 +251,8 @@ sub do_export {
         } # for @ssyms
 
     } # for @imps
+
+    $recap;
 }
 
 1;
@@ -254,7 +262,7 @@ __END__
 
 =pod
 
-=encoding utf-8
+=encoding UTF-8
 
 =head1 NAME
 
@@ -262,7 +270,7 @@ Perinci::Exporter - Metadata-aware Exporter
 
 =head1 VERSION
 
-version 0.03
+version 0.04
 
 =head1 SYNOPSIS
 
@@ -499,9 +507,8 @@ Examples:
  use YourModule foo => {args_as=>'array'}; # export with custom wrap
 
 Note that when set to 0, the exported function might already be wrapped anyway,
-e.g. when your module adds this at the bottom:
-
- Perinci::Sub::Wrapper::wrap_all_subs();
+e.g. when your module uses embedded wrapping (see
+L<Dist::Zilla::Plugin::Rinci::Wrap>) or wrap its subroutines manually.
 
 Also note that wrapping will not be done if subroutine does not have metadata.
 
@@ -550,9 +557,6 @@ Like C<prefix> import option, but to apply to all exports.
 Like C<suffix> import option, but to apply to all exports.
 
 =back
-
-
-None are exported by default, but they are exportable.
 
 =head1 FAQ
 
@@ -646,13 +650,29 @@ L<Perinci>
 
 L<Perinci::Sub::Wrapper>
 
+=head1 HOMEPAGE
+
+Please visit the project's homepage at L<https://metacpan.org/release/Perinci-Exporter>.
+
+=head1 SOURCE
+
+Source repository is at L<https://github.com/sharyanto/perl-Perinci-Exporter>.
+
+=head1 BUGS
+
+Please report any bugs or feature requests on the bugtracker website L<https://rt.cpan.org/Public/Dist/Display.html?Name=Perinci-Exporter>
+
+When submitting a bug or request, please include a test-file or a
+patch to an existing test-file that illustrates the bug or desired
+feature.
+
 =head1 AUTHOR
 
 Steven Haryanto <stevenharyanto@gmail.com>
 
 =head1 COPYRIGHT AND LICENSE
 
-This software is copyright (c) 2013 by Steven Haryanto.
+This software is copyright (c) 2014 by Steven Haryanto.
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.
