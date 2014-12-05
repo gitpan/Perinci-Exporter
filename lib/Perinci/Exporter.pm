@@ -1,13 +1,14 @@
 package Perinci::Exporter;
 
+our $DATE = '2014-12-05'; # DATE
+our $VERSION = '0.05'; # VERSION
+
 use 5.010001;
 use strict;
 use warnings;
 use experimental 'smartmatch';
 
 use Scalar::Util qw(reftype);
-
-our $VERSION = '0.04'; # VERSION
 
 # what a generic name, this hash caches the wrapped functions, so that when
 # importer asks to import a wrapped function with default wrapping options, we
@@ -130,8 +131,8 @@ sub do_export {
     # find out existing symbols on the target package, so we can die on clash,
     # if that behavior's what the importer wants
 
-    require SHARYANTO::Package::Util;
-    my %existing = SHARYANTO::Package::Util::list_package_contents($target);
+    require Package::MoreUtil;
+    my %existing = Package::MoreUtil::list_package_contents($target);
 
     # recap information
     my $recap = {wrapped=>[]};
@@ -270,7 +271,7 @@ Perinci::Exporter - Metadata-aware Exporter
 
 =head1 VERSION
 
-version 0.04
+This document describes version 0.05 of Perinci::Exporter (from Perl distribution Perinci-Exporter), released on 2014-12-05.
 
 =head1 SYNOPSIS
 
@@ -656,7 +657,7 @@ Please visit the project's homepage at L<https://metacpan.org/release/Perinci-Ex
 
 =head1 SOURCE
 
-Source repository is at L<https://github.com/sharyanto/perl-Perinci-Exporter>.
+Source repository is at L<https://github.com/perlancar/perl-Perinci-Exporter>.
 
 =head1 BUGS
 
@@ -668,11 +669,11 @@ feature.
 
 =head1 AUTHOR
 
-Steven Haryanto <stevenharyanto@gmail.com>
+perlancar <perlancar@cpan.org>
 
 =head1 COPYRIGHT AND LICENSE
 
-This software is copyright (c) 2014 by Steven Haryanto.
+This software is copyright (c) 2014 by perlancar@cpan.org.
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.
